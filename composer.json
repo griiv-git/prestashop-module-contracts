@@ -14,7 +14,23 @@
   },
   "autoload": {
     "psr-4": {
-      "Griiv\\Prestashop\\Module\\Contracts\\": "src/"
+      "Griiv\\\\Prestashop\\\\Module\\\\Contracts\\\\": "src/"
     }
+  },
+  "scripts": {
+    "copy-griiv-services": [
+      "php -r \"if (!is_dir('config/services')) { mkdir('config/services', 0777, true); } if (!is_dir('app/config')) { mkdir('app/config', 0777, true); } copy('vendor/griiv/prestashop-module-contracts/config/services_griiv.yml', 'config/services/services_griiv.yml'); copy('vendor/griiv/prestashop-module-contracts/config/services_griiv.yml', 'app/config/services_griiv.yml');\""
+    ],
+    "import-griiv-services": [
+      "php -r '$file = \"app/config/services.yml\"; if (file_exists($file)) { $import = \"\\n# Griiv services\\nimports:\\n  - { resource: services_griiv.yml }\\n\"; $content = file_get_contents($file); if (false === strpos($content, \"services_griiv.yml\")) { $content = preg_replace(\"/^services:/m\", $import . \"services:\", $content, 1); file_put_contents($file, $content); } }'"
+    ],
+    "post-install-cmd": [
+      "@copy-griiv-services",
+      "@import-griiv-services"
+    ],
+    "post-update-cmd": [
+      "@copy-griiv-services",
+      "@import-griiv-services"
+    ]
   }
 }

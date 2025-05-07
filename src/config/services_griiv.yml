@@ -8,8 +8,9 @@ services:
     class: Context
     factory: [ 'Context', 'getContext' ]
 
-  Griiv\Prestashop\Module\Contracts\Hook:
-    class: Griiv\Prestashop\Module\Contracts\Hook
+
+  griiv.prestashop.module.contracts.hook.hook:
+    class: Griiv\Prestashop\Module\Contracts\Hook\Hook
     public: false
     arguments:
       - '@griiv.prestashop.module.contracts.context'
