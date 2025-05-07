@@ -1,0 +1,20 @@
+{
+  "name": "griiv/prestashop-module-contracts",
+  "description": "Prestashop Module interface and Hook interface",
+  "type": "library",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Arnaud Scoté",
+      "email": "arnaud@griiv.fr"
+    }
+  ],
+  "require": {
+    "php": ">=7.2"
+  },
+  "autoload": {
+    "psr-4": {
+      "Griiv\\Prestashop\\Module\\Contracts\\": "src/"
+    }
+  }
+}
