@@ -4,12 +4,6 @@ services:
     autoconfigure: true
     public: true
 
-  griiv.prestashop.module.contracts.module:
-    class: Module
-    factory: [ 'Module', 'getInstanceByName' ]
-    arguments:
-      - 'gauthenticate'
-
   griiv.prestashop.module.contracts.context:
     class: Context
     factory: [ 'Context', 'getContext' ]
@@ -18,5 +12,4 @@ services:
     class: Griiv\Prestashop\Module\Contracts\Hook
     public: false
     arguments:
-      - '@griiv.prestashop.module.contracts.module'
       - '@griiv.prestashop.module.contracts.context'
