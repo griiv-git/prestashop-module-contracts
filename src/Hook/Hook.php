@@ -2,9 +2,6 @@
 
 namespace Griiv\Prestashop\Module\Contracts\Hook;
 
-use Context;
-use DgtxContactForm;
-
 class Hook
 {
     protected $context;

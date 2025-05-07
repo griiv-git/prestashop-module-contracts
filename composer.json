@@ -14,7 +14,7 @@
   },
   "autoload": {
     "psr-4": {
-      "Griiv\\\\Prestashop\\\\Module\\\\Contracts\\\\": "src/"
+      "Griiv\\Prestashop\\Module\\Contracts\\": "src/"
     }
   },
   "scripts": {
