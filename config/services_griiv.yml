@@ -11,6 +11,6 @@ services:
 
   griiv.prestashop.module.contracts.hook.hook:
     class: Griiv\Prestashop\Module\Contracts\Hook\Hook
-    public: false
+    public: true
     arguments:
       - '@griiv.prestashop.module.contracts.context'
