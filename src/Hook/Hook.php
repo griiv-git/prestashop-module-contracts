@@ -5,7 +5,8 @@ namespace Griiv\Prestashop\Module\Contracts\Hook;
 class Hook
 {
     protected $context;
-    protected $module = null;
+
+    protected \Module $module;
     protected $tpl = null;
     private $tplExt = '.tpl';
     protected $tplName = null;
@@ -20,7 +21,7 @@ class Hook
         return $this->module;
     }
 
-    protected function setModule(\Module $module)
+    public function setModule(\Module $module)
     {
         $this->module = $module;
     }

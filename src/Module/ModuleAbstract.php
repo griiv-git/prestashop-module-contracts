@@ -2,6 +2,7 @@
 
 namespace Griiv\Prestashop\Module\Contracts\Module;
 
+use Griiv\Prestashop\Module\Contracts\Hook\Hook;
 use Griiv\Prestashop\Module\Contracts\Module\Contracts\ModuleInterface;
 use Symfony\Component\HttpKernel\KernelInterface;
 
@@ -34,8 +35,13 @@ class ModuleAbstract extends \Module implements ModuleInterface
             if (!class_exists($className)) {
                 throw new \Exception("Class $className not found");
             }
+            $service = $this->get($this->nameSpace . ucfirst($method) . '\\' . $hookName);
 
-            return $this->get($this->nameSpace . ucfirst($method) . '\\' . $hookName)->{$method}($args[0]);
+            if ($service instanceof Hook) {
+                $service->setModule($this);
+            }
+
+            return $service->{$method}($args[0]);
         }
     }
 
