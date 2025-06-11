@@ -52,4 +52,12 @@ class Hook
     {
         return $this->tplName;
     }
+
+    private function insertElementIntoArrayAfterSpecificKey(array $array, $key, array $new)
+    {
+        $keys = array_keys($array);
+        $index = array_search($key, $keys, true);
+        $pos = false === $index ? count($array) : $index + 1;
+        return array_merge(array_slice($array, 0, $pos), $new, array_slice($array, $pos));
+    }
 }
