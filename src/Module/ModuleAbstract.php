@@ -35,10 +35,14 @@ class ModuleAbstract extends \Module implements ModuleInterface
             if (!class_exists($className)) {
                 throw new \Exception("Class $className not found");
             }
-            $service = $this->get($this->nameSpace . ucfirst($method) . '\\' . $hookName);
+            $serviceToCall = $this->nameSpace . ucfirst($method) . '\\' . $hookName;
+            $service = $this->get($serviceToCall);
 
-            if ($service instanceof Hook) {
-                $service->setModule($this);
+            if (!$service) {
+                $service = self::getService($serviceToCall);
+                if (!$service) {
+                    throw new \Exception("Service $serviceToCall not found");
+                }
             }
 
             return $service->{$method}($args[0]);
