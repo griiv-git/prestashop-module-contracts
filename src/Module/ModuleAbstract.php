@@ -45,6 +45,10 @@ class ModuleAbstract extends \Module implements ModuleInterface
                 }
             }
 
+            if ($service instanceof Hook) {
+                $service->setModule($this);
+            }
+
             return $service->{$method}($args[0]);
         }
     }
