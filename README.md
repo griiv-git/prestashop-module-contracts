@@ -229,14 +229,58 @@ src/
     └── ModuleTrait.php                  # Trait avec méthodes utilitaires
 ```
 
-## Avantages
+## Bénéfices
 
-- **Organisation claire** : Séparation des responsabilités avec un hook par classe
-- **Type-safe** : Interfaces typées pour chaque type de hook
-- **Testable** : Architecture facilitant les tests unitaires
-- **Moderne** : Utilise les features PHP modernes et Symfony
-- **Maintenable** : Code structuré et facilement extensible
-- **PSR-4** : Autoloading standard
+### Architecture et qualité du code
+
+- **Respect des principes SOLID** :
+  - Single Responsibility : un hook = une classe
+  - Interface Segregation : interfaces séparées par type de hook
+  - Dependency Inversion : programmation contre des abstractions
+- **Tests unitaires facilités** : Interfaces permettant le mocking et injection de dépendances
+- **Code maintenable** : Structure claire et facilement extensible
+- **PSR-4** : Autoloading standard respectant les conventions PHP modernes
+
+### Injection de dépendances et services
+
+- **Chargement des services via DI/autowiring** : Les hooks peuvent recevoir leurs dépendances via le conteneur Symfony
+- **Utilisation des services PrestaShop** : Accès aux services définis dans les fichiers YML de configuration
+- **Lazy loading** : Les hooks ne sont instanciés que lorsqu'ils sont appelés, optimisant les performances
+
+### Extensibilité et flexibilité
+
+- **Surcharge/décoration des hooks** : Architecture permettant d'étendre ou modifier le comportement des hooks existants
+- **Surcharge/décoration des services** : Possibilité de décorer n'importe quel service du module via le conteneur Symfony
+- **Réutilisabilité** : Services et hooks réutilisables entre différents modules
+- **Compatibilité écosystème Symfony** : Intégration native avec les bundles et composants Symfony
+
+### Conventions et productivité
+
+- **Conventions de nommage claires** : Réduction de la configuration grâce à des conventions explicites
+- **Séparation des responsabilités** : Logique métier isolée de l'infrastructure PrestaShop
+- **Type-safety** : Interfaces typées garantissant les signatures de méthodes
+
+## Points d'attention
+
+### Courbe d'apprentissage
+
+- Nécessite une compréhension de Symfony et de l'injection de dépendances
+- Changement de paradigme pour les développeurs habitués au style PrestaShop classique
+- Convention de nommage stricte à respecter
+
+### Considérations techniques
+
+- **Magic methods (`__call`)** : Peut rendre le code moins découvrable pour les IDE sans configuration appropriée
+- **Résolution dynamique** : Les erreurs de nommage de hooks sont détectées au runtime, pas à la compilation
+- **Debugging** : La résolution dynamique peut compliquer le suivi de l'exécution
+- **Prérequis PHP** : Nécessite PHP 7.2+ minimum, peut exclure certains projets legacy
+- **Dépendance Symfony** : Requiert le kernel Symfony (natif en 1.7+, via lib en 1.6)
+
+### Recommandations
+
+- Utiliser un IDE avec support du PSR-4 et de l'autocomplétion Symfony (PHPStorm recommandé)
+- Mettre en place des tests pour détecter les erreurs de nommage
+- Documenter les hooks personnalisés pour faciliter la maintenance
 
 ## Scripts Composer
 
