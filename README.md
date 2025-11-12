@@ -22,14 +22,29 @@ Ce package propose une architecture structurée pour créer des modules PrestaSh
 ## Prérequis
 
 - PHP >= 7.2
-- PrestaShop (avec support Symfony)
+- PrestaShop 1.7+ (avec support Symfony natif)
 - Composer
 
+### Compatibilité PrestaShop 1.6
+
+Cette bibliothèque peut également être utilisée avec **PrestaShop 1.6** en installant en complément la bibliothèque `prestashop/module-lib-service-container` qui fournit un conteneur de services compatible.
+
 ## Installation
+
+### Pour PrestaShop 1.7+
 
 ```bash
 composer require griiv/prestashop-module-contracts
 ```
+
+### Pour PrestaShop 1.6
+
+```bash
+composer require griiv/prestashop-module-contracts
+composer require prestashop/module-lib-service-container
+```
+
+La bibliothèque `prestashop/module-lib-service-container` permet d'émuler le conteneur de services Symfony sur PrestaShop 1.6, rendant ainsi cette bibliothèque pleinement fonctionnelle.
 
 ## Utilisation
 
