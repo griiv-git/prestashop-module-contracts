@@ -4,7 +4,7 @@
  * Exemple complet d'utilisation de ModuleAbstract avec l'attribut AsPrestaShopHook
  *
  * Ce fichier montre comment configurer un module PrestaShop pour utiliser
- * l'auto-tagging des hooks via le PrestaShopHookCompilerPass.
+ * l'auto-découverte et l'auto-tagging des hooks via le PrestaShopHookCompilerPass.
  */
 
 namespace VotreModule;
@@ -32,16 +32,19 @@ class VotreModule extends ModuleAbstract
         $this->displayName = $this->trans('Votre Module', [], 'Modules.Votremodule.Admin');
         $this->description = $this->trans('Description de votre module', [], 'Modules.Votremodule.Admin');
 
-        // Enregistrer le CompilerPass pour l'auto-tagging des hooks avec l'attribut #[AsPrestaShopHook]
+        // Enregistrer le CompilerPass pour l'auto-découverte et l'auto-tagging des hooks
         $this->registerCompilerPass();
     }
 
     /**
-     * Enregistre le CompilerPass pour l'auto-tagging des hooks
+     * Enregistre le CompilerPass pour l'auto-découverte des hooks
      *
      * Cette méthode ajoute le PrestaShopHookCompilerPass au container Symfony.
-     * Le CompilerPass scanne tous les services et ajoute automatiquement le tag
-     * 'prestashop.hook' aux classes qui possèdent l'attribut #[AsPrestaShopHook].
+     * Le CompilerPass va :
+     * 1. Scanner les répertoires spécifiés pour trouver les classes PHP
+     * 2. Détecter les classes avec l'attribut #[AsPrestaShopHook]
+     * 3. Les enregistrer automatiquement comme services dans le container
+     * 4. Les tagger avec 'prestashop.hook'
      */
     private function registerCompilerPass(): void
     {
@@ -51,7 +54,23 @@ class VotreModule extends ModuleAbstract
 
             // Ajouter le CompilerPass seulement si le container est en phase de compilation
             if ($container instanceof \Symfony\Component\DependencyInjection\ContainerBuilder) {
-                $container->addCompilerPass(new PrestaShopHookCompilerPass());
+                // Définir les répertoires à scanner pour trouver les hooks
+                // Ces répertoires doivent contenir vos classes de hooks
+                $directories = [
+                    $this->getLocalPath() . 'src/Hook/Display',
+                    $this->getLocalPath() . 'src/Hook/Action',
+                    $this->getLocalPath() . 'src/Hook/Filter',
+                    $this->getLocalPath() . 'src/Hook/Additional',
+                ];
+
+                // Filtrer les répertoires qui existent réellement
+                $directories = array_filter($directories, function($dir) {
+                    return is_dir($dir);
+                });
+
+                // Créer et enregistrer le CompilerPass avec les répertoires à scanner
+                $compilerPass = new PrestaShopHookCompilerPass([], $directories);
+                $container->addCompilerPass($compilerPass);
             }
         } catch (\Exception $e) {
             // En cas d'erreur, logger l'exception pour faciliter le debug
@@ -62,6 +81,10 @@ class VotreModule extends ModuleAbstract
 
     /**
      * Retourne la liste des hooks à enregistrer
+     *
+     * Note : Avec l'auto-découverte, cette liste peut être générée automatiquement
+     * en parcourant les classes découvertes, mais pour la compatibilité avec
+     * PrestaShop, il est recommandé de les lister explicitement.
      *
      * @return array Liste des noms de hooks
      */
