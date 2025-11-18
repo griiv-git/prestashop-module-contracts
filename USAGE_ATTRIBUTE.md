@@ -8,39 +8,76 @@ L'attribut `#[AsPrestaShopHook]` permet de marquer automatiquement vos classes d
 
 - PHP >= 8.0 (pour le support des attributs natifs)
 - PrestaShop 1.7+ avec Symfony
-- Le bundle `GriivPrestashopModuleContractsBundle` doit être enregistré dans votre `AppKernel`
 
 ## Installation et configuration
 
-### 1. Enregistrer le bundle dans AppKernel
+### 1. Installer la bibliothèque
 
-Modifiez le fichier `app/AppKernel.php` de votre installation PrestaShop pour ajouter le bundle :
+```bash
+composer require griiv/prestashop-module-contracts
+```
+
+### 2. Enregistrer le CompilerPass dans votre module
+
+Dans la classe principale de votre module, ajoutez le code suivant pour enregistrer le `PrestaShopHookCompilerPass` :
 
 ```php
 <?php
 
-use Symfony\Component\HttpKernel\Kernel;
-use Symfony\Component\Config\Loader\LoaderInterface;
+namespace VotreNamespace;
 
-class AppKernel extends Kernel
+use Griiv\Prestashop\Module\Contracts\Module\ModuleAbstract;
+use Griiv\Prestashop\Module\Contracts\DependencyInjection\CompilerPass\PrestaShopHookCompilerPass;
+
+class VotreModule extends ModuleAbstract
 {
-    public function registerBundles()
-    {
-        $bundles = [
-            // ... autres bundles
-            new \Griiv\Prestashop\Module\Contracts\GriivPrestashopModuleContractsBundle(),
-        ];
+    protected $nameSpace = 'VotreNamespace\\';
 
-        return $bundles;
+    public function __construct()
+    {
+        $this->name = 'votremodule';
+        $this->tab = 'administration';
+        $this->version = '1.0.0';
+        $this->author = 'Votre Nom';
+        $this->need_instance = 0;
+
+        parent::__construct();
+
+        $this->displayName = $this->trans('Votre Module', [], 'Modules.Votremodule.Admin');
+        $this->description = $this->trans('Description de votre module', [], 'Modules.Votremodule.Admin');
+
+        // Enregistrer le CompilerPass pour l'auto-tagging des hooks
+        $this->registerCompilerPass();
     }
 
-    // ... reste du code
+    /**
+     * Enregistre le CompilerPass pour l'auto-tagging des hooks
+     */
+    private function registerCompilerPass(): void
+    {
+        $kernel = static::getKernel();
+        $container = $kernel->getContainer();
+
+        // Ajouter le CompilerPass si le container est encore en phase de compilation
+        if ($container instanceof \Symfony\Component\DependencyInjection\ContainerBuilder) {
+            $container->addCompilerPass(new PrestaShopHookCompilerPass());
+        }
+    }
+
+    public function getHooks(): array
+    {
+        return [
+            'displayHeader',
+            'actionProductUpdate',
+            // ... autres hooks
+        ];
+    }
 }
 ```
 
-### 2. Vider le cache
+### 3. Vider le cache
 
-Après l'enregistrement du bundle, videz le cache de PrestaShop :
+Après la configuration, videz le cache de PrestaShop :
 
 ```bash
 php bin/console cache:clear
@@ -195,7 +232,7 @@ La configuration dans `services.yml` n'est plus nécessaire car le tag est ajout
 
 ### Le hook n'est pas reconnu
 
-1. Vérifiez que le bundle est bien enregistré dans `AppKernel.php`
+1. Vérifiez que le `PrestaShopHookCompilerPass` est bien enregistré dans votre module
 2. Videz le cache : `php bin/console cache:clear`
 3. Vérifiez que votre classe possède bien l'attribut `#[AsPrestaShopHook]`
 4. Assurez-vous que votre classe est bien un service enregistré dans le container
@@ -206,6 +243,13 @@ Si vous obtenez une erreur de réflexion, assurez-vous que :
 - La classe existe et est chargeable par l'autoloader PSR-4
 - Le namespace est correct
 - PHP 8.0+ est bien utilisé
+
+### Le CompilerPass n'est pas enregistré
+
+Si le CompilerPass ne semble pas fonctionner :
+- Vérifiez que vous appelez bien `registerCompilerPass()` dans le constructeur de votre module
+- Assurez-vous que le container est encore en phase de compilation (type `ContainerBuilder`)
+- Vérifiez les logs de Symfony pour voir si des erreurs sont remontées
 
 ## Compatibilité
 

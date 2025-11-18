@@ -3,8 +3,10 @@
 # Les services avec l'attribut #[AsPrestaShopHook] seront automatiquement
 # tagués avec 'prestashop.hook' grâce au PrestaShopHookCompilerPass.
 #
-# Pour activer cette fonctionnalité, enregistrez le bundle dans votre AppKernel :
-# new \Griiv\Prestashop\Module\Contracts\GriivPrestashopModuleContractsBundle()
+# Pour activer cette fonctionnalité, enregistrez le CompilerPass dans votre module :
+# $container->addCompilerPass(new PrestaShopHookCompilerPass());
+#
+# Voir USAGE_ATTRIBUTE.md pour plus de détails
 
 services:
   _defaults:
