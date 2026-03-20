@@ -6,7 +6,8 @@ class Hook
 {
     protected $context;
 
-    protected \Module $module;
+    /** @var \Module */
+    protected $module;
     protected $tpl = null;
     private $tplExt = '.tpl';
     protected $tplName = null;
