@@ -12,7 +12,7 @@ interface ModuleInterface
 
     public static function getKernel(): KernelInterface;
 
-    public static function getService(string $serviceName): object;
+    public static function getService(string $serviceName)
 
     public static function getParameter(string $key): string;
 

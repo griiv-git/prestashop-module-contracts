@@ -87,7 +87,7 @@ class ModuleAbstract extends \Module implements ModuleInterface
      *
      * @return object
      */
-    public static function getService(string $service): object
+    public static function getService(string $service)
     {
         return self::getKernel()->getContainer()->get($service);
     }
