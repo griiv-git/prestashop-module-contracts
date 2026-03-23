@@ -4,6 +4,7 @@ namespace Griiv\Prestashop\Module\Contracts\Module;
 
 use Griiv\Prestashop\Module\Contracts\Hook\Hook;
 use Griiv\Prestashop\Module\Contracts\Module\Contracts\ModuleInterface;
+use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
 use Symfony\Component\HttpKernel\KernelInterface;
 
 class ModuleAbstract extends \Module implements ModuleInterface
@@ -21,7 +22,7 @@ class ModuleAbstract extends \Module implements ModuleInterface
     {
         if (preg_match('@hook@', $name)) {
             $method = 'display';
-            $hookName = substr($name, 4);
+            $hookName = ucfirst(substr($name, 4));
 
             if (substr($hookName, 0, 6) == 'Action') {
                 $method = 'action';
@@ -36,13 +37,25 @@ class ModuleAbstract extends \Module implements ModuleInterface
                 throw new \Exception("Class $className not found");
             }
             $serviceToCall = $this->nameSpace . ucfirst($method) . '\\' . $hookName;
-            $service = $this->get($serviceToCall);
+
+            try {
+                $service = $this->get($serviceToCall);
+            } catch (ServiceNotFoundException $e) {
+                try {
+                    $service = self::getService($serviceToCall);
+                } catch (ServiceNotFoundException $e) {
+                    $service = null;
+                }
+            }
 
             if (!$service) {
-                $service = self::getService($serviceToCall);
-                if (!$service) {
-                    throw new \Exception("Service $serviceToCall not found");
+                if (_PS_MODE_DEV_ || self::getKernel()->isDebug()) {
+                    self::getService('logger')->error('Module : ' . $this->name . ' | Hook : ' . $name . ' | Service : ' . $serviceToCall . ' not found');
+                    throw new ServiceNotFoundException('Module : ' . $this->name . ' | Hook : ' . $name . ' | Service : ' . $serviceToCall . ' not found');
+
                 }
+                self::getService('logger')->error('Module : ' . $this->name . ' | Hook : ' . $name . ' | Service : ' . $serviceToCall . ' not found');
+                return null;
             }
 
             if ($service instanceof Hook) {
