@@ -30,6 +30,8 @@ class ModuleAbstract extends \Module implements ModuleInterface
                 $method = 'filter';
             } elseif (substr($hookName, 0, 10) == 'Additional') {
                 $method = 'additional';
+            } elseif (substr($hookName, 0, 8) == 'Validate') {
+                $method = 'validate';
             }
 
             $className = '\\' . $this->nameSpace . ucfirst($method) . '\\' . $hookName;

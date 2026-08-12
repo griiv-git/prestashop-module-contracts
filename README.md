@@ -14,7 +14,8 @@ Ce package propose une architecture structurée pour créer des modules PrestaSh
   - `DisplayHookInterface` : Pour les hooks d'affichage (retournent du HTML)
   - `ActionHookInterface` : Pour les hooks d'action (retournent un booléen)
   - `FilterHookInterface` : Pour les hooks de filtrage
-  - `AdditionalHookInterface` : Pour les hooks additionnels
+  - `AdditionalHookInterface` : Pour les hooks additionnels (retournent un tableau)
+  - `ValidateHookInterface` : Pour les hooks de validation de formulaire
 - **Intégration Symfony** : Accès direct au kernel, aux services et à l'EntityManager Doctrine
 - **Traits utilitaires** (Concerns) : Méthodes helper pour les traductions, tokens de sécurité et configuration module
 - **Attribut PHP 8.0+** : `#[AsPrestaShopHook]` pour déclarer les hooks de manière déclarative (optionnel, rétrocompatible PHP 7.2)
@@ -196,6 +197,25 @@ Le système de résolution automatique des hooks suit ces conventions :
 - **Action hooks** : `hookActionNomDuHook` → classe `VotreNamespace\Action\ActionNomDuHook`
 - **Filter hooks** : `hookFilterNomDuHook` → classe `VotreNamespace\Filter\FilterNomDuHook`
 - **Additional hooks** : `hookAdditionalNomDuHook` → classe `VotreNamespace\Additional\AdditionalNomDuHook`
+- **Validate hooks** : `hookValidateNomDuHook` → classe `VotreNamespace\Validate\ValidateNomDuHook`
+
+> **Important** : la résolution se fait sur le **préfixe du nom du hook**, pas sur sa sémantique.
+> Tout hook dont le nom ne commence pas par `Action`, `Filter`, `Additional` ou `Validate`
+> retombe sur le bucket `Display`.
+
+#### Type de retour des hooks additionnels
+
+Les hooks PrestaShop commençant par `additional` (`additionalCustomerFormFields`,
+`additionalCustomerAddressFields`) sont exécutés avec agrégation des retours
+(`Hook::exec(..., $array_return = true)`), et le coeur **itère la valeur retournée**
+pour collecter les champs. `AdditionalHookInterface::additional()` retourne donc `array` :
+un retour vide ou `void` ferait disparaître silencieusement les champs ajoutés.
+
+#### Hooks de validation
+
+Les hooks `validate*` reçoivent les instances de `FormField` créées par le module.
+Le coeur matérialise les erreurs à partir de **ces objets**, pas de la valeur de retour :
+signalez donc les erreurs en appelant `FormField::addError()` sur les objets reçus.
 
 ### 6. Accès aux services Symfony
 
@@ -231,7 +251,8 @@ src/
 │   │   ├── ActionHookInterface.php       # Interface pour hooks d'action
 │   │   ├── AdditionalHookInterface.php   # Interface pour hooks additionnels
 │   │   ├── DisplayHookInterface.php      # Interface pour hooks d'affichage
-│   │   └── FilterHookInterface.php       # Interface pour hooks de filtrage
+│   │   ├── FilterHookInterface.php       # Interface pour hooks de filtrage
+│   │   └── ValidateHookInterface.php     # Interface pour hooks de validation
 │   └── Hook.php                          # Classe de base pour les hooks
 └── Module/
     ├── Contracts/
