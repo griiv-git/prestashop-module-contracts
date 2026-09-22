@@ -1,6 +1,6 @@
 <?php
 
-namespace Griiv\Prestashop\Module\Contracts\Trait;
+namespace Griiv\Prestashop\Module\Contracts\Concern;
 
 trait ModuleTrait
 {
